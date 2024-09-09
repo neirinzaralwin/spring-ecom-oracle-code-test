@@ -3,48 +3,84 @@ package com.neirinzaralwin.spring_ecommerce.controller;
 import com.neirinzaralwin.spring_ecommerce.entity.User;
 import com.neirinzaralwin.spring_ecommerce.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
+@RequestMapping("/users")
 @RestController
 public class UserController {
 
     @Autowired
     private UserService service;
 
-    @PostMapping("/createUser")
-    public User addUser(@RequestBody User user) {
-        return service.saveUser(user);
+    @GetMapping("/me")
+    public ResponseEntity<User> authenticatedUser() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+        User currentUser = (User) authentication.getPrincipal();
+
+        return ResponseEntity.ok(currentUser);
     }
 
-    @PostMapping("/addUsers")
-    public List<User> addUsers(@RequestBody List<User> users) {
-        return service.saveUsers(users);
+    @GetMapping("/")
+    public ResponseEntity<List<User>> findAllUsers() {
+        List<User> users = service.getUsers();
+        return ResponseEntity.ok(users);
     }
 
-    @GetMapping("/Users")
-    public List<User> findAllUsers() {
-        return service.getUsers();
+    @GetMapping("/User")
+    public ResponseEntity<Object> findUserByEmpId(@RequestParam(required = false) Integer id,
+                                                  @RequestParam(required = false) String name,
+                                                  @RequestParam(required = false) String email) {
+        if (id != null) {
+            User user = service.getUserById(id);
+            return ResponseEntity.ok(user);
+        } else if (name != null) {
+            User user = service.getUserByName(name);
+            return ResponseEntity.ok(user);
+        } else if (email != null) {
+            User user = service.getUserByEmail(email);
+            return ResponseEntity.ok(user);
+        } else {
+            Map<String, String> errorResponse = new HashMap<>();
+            errorResponse.put("error", "please provide id, name, or email");
+            return ResponseEntity.badRequest().body(errorResponse);
+        }
     }
 
-    @GetMapping("/UserById/{id}")
-    public User findUserByEmpId(@PathVariable int id) {
-        return service.getUserById(id);
-    }
+//    @GetMapping("/User/{name}")
+//    public User findUserByFirstName(@PathVariable String name) {
+//        return service.getUserByName(name);
+//    }
+//
+//    @GetMapping("/User/{email}")
+//    public User findUserByEmail(@PathVariable String email) {
+//        return service.getUserByEmail(email);
+//    }
 
-    @GetMapping("/User/{name}")
-    public User findUserByFirstName(@PathVariable String name) {
-        return service.getUserByName(name);
-    }
+//    @PostMapping("/createUser")
+//    public User addUser(@RequestBody User user) {
+//        return service.saveUser(user);
+//    }
+//
+//    @PostMapping("/addUsers")
+//    public List<User> addUsers(@RequestBody List<User> users) {
+//        return service.saveUsers(users);
+//    }
+//
+//    @PutMapping("/update")
+//    public User updateUser(@RequestBody User user) {
+//        return service.updateUser(user);
+//    }
 
-    @PutMapping("/update")
-    public User updateUser(@RequestBody User user) {
-        return service.updateUser(user);
-    }
-
-    @DeleteMapping("/delete/{id}")
-    public String deleteUser(@PathVariable int id) {
-        return service.deleteUser(id);
-    }
+//    @DeleteMapping("/delete/{id}")
+//    public String deleteUser(@PathVariable int id) {
+//        return service.deleteUser(id);
+//    }
 }

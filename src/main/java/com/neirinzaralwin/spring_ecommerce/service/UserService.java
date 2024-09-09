@@ -5,6 +5,8 @@ import java.util.List;
 
 import com.neirinzaralwin.spring_ecommerce.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -29,7 +31,11 @@ public class UserService {
     }
 
     public User getUserByName(String name) {
-        return repository.findByName(name);
+        return repository.findByName(name).orElseThrow(() -> new UsernameNotFoundException("User not found"));
+    }
+
+    public User getUserByEmail(String email) {
+        return repository.findByEmail(email).orElseThrow(() -> new RuntimeException("User with this email not found"));
     }
 
     public String deleteUser(int id) {
@@ -38,13 +44,10 @@ public class UserService {
     }
 
     public User updateUser(User user) {
-        User existingUser = repository.findById(user.getId()).orElse(null);
-        if (existingUser != null) {
-            existingUser.setName(user.getName());
-            existingUser.setEmail(user.getEmail());
-            return repository.save(existingUser);
-        } else {
-            return null; // or throw an exception
-        }
+        User existingUser = repository.findById(user.getId())
+                .orElseThrow(() -> new BadCredentialsException("No user found with this id"));
+        existingUser.setName(user.getName());
+        existingUser.setEmail(user.getEmail());
+        return repository.save(existingUser);
     }
 }
