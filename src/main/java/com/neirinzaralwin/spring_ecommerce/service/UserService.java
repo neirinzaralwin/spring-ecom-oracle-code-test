@@ -44,7 +44,7 @@ public class UserService {
     }
 
     public User updateUser(User user) {
-        User existingUser = repository.findById(user.getId())
+        User existingUser = repository.findById(user.getUserId())
                 .orElseThrow(() -> new BadCredentialsException("No user found with this id"));
         existingUser.setName(user.getName());
         existingUser.setEmail(user.getEmail());

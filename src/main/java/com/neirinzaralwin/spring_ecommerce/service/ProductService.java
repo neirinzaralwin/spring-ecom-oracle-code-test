@@ -1,13 +1,13 @@
 package com.neirinzaralwin.spring_ecommerce.service;
 
 import com.neirinzaralwin.spring_ecommerce.entity.Product;
-import com.neirinzaralwin.spring_ecommerce.entity.User;
 import com.neirinzaralwin.spring_ecommerce.repository.ProductRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class ProductService {
@@ -27,8 +27,8 @@ public class ProductService {
         return repository.findAll();
     }
 
-    public Product getProductById(int id) {
-        return repository.findById(id).orElse(null);
+    public Optional<Product> getProductById(int id) {
+        return repository.findById(id);
     }
 
     public Product getProductByName(String name) {

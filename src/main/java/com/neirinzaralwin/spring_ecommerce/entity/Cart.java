@@ -1,10 +1,9 @@
 package com.neirinzaralwin.spring_ecommerce.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
-import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.UUID;
 
 @Entity
 @Table(name = "CARTS")
@@ -14,23 +13,30 @@ public class Cart {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int cartId;
 
-    @ManyToOne
-    @JoinColumn(name = "userId", nullable = false)
+    @OneToOne
+    @JoinColumn(name = "userId", referencedColumnName = "userId", nullable = false)
+    @JsonIgnore
     private User user;
 
-    @Column(name="createdAt", nullable = false)
+    @Column(name = "userId", nullable = false, insertable = false, updatable = false)
+    private int userId;
+
+    @Column(name = "createdAt", nullable = false)
     private LocalDateTime createdAt;
 
-    @Column(name="updatedAt", nullable = true)
+    @Column(name = "updatedAt", nullable = true)
     private LocalDateTime updatedAt;
+
+    @OneToMany(mappedBy = "cart", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<CartProduct> items;
 
     @PrePersist
     protected void onCreate() {
         createdAt = LocalDateTime.now();
+        userId = user.getUserId();
     }
 
     // Getters and Setters
-
 
     public int getCartId() {
         return cartId;
@@ -46,6 +52,14 @@ public class Cart {
 
     public void setUser(User user) {
         this.user = user;
+    }
+
+    public int getUserId() {
+        return userId;
+    }
+
+    public void setUserId(int userId) {
+        this.userId = userId;
     }
 
     public LocalDateTime getCreatedAt() {
@@ -64,15 +78,22 @@ public class Cart {
         this.updatedAt = updatedAt;
     }
 
-    // toString
+    public List<CartProduct> getItems() {
+        return items;
+    }
+
+    public void setItems(List<CartProduct> items) {
+        this.items = items;
+    }
 
     @Override
     public String toString() {
         return "Cart{" +
                 "cartId=" + cartId +
-                ", user=" + user +
+                ", user=" + user.getUserId() +
                 ", createdAt=" + createdAt +
                 ", updatedAt=" + updatedAt +
+                ", items=" + items +
                 '}';
     }
 }

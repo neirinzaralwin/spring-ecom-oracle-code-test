@@ -3,36 +3,41 @@ package com.neirinzaralwin.spring_ecommerce.entity;
 import jakarta.persistence.*;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import java.util.Collection;
 import java.util.List;
 
 @Entity
 @Table(name = "USERS")
-public class User implements UserDetails{
+public class User implements UserDetails {
 
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int userId;
 
-    @Column(name="name")
+    @Column(name = "name", length = 100, nullable = false)
     private String name;
 
-    @Column(name="email", nullable=false, length=50, unique = true)
+    @Column(name = "email", length = 100, nullable = false, unique = true)
     private String email;
 
-    @Column(name="password", nullable=false, length=200)
+    @Column(name = "password", nullable = false, length = 200)
+    @JsonIgnore
     private String password;
 
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Cart> carts;
+    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonIgnore
+    private Cart cart;
 
-    public int getId() {
+    // Getters and Setters
+
+    public int getUserId() {
         return userId;
     }
 
-    public void setId(int id) {
-        this.userId = id;
+    public void setUserId(int userId) {
+        this.userId = userId;
     }
 
     public String getName() {
@@ -51,21 +56,25 @@ public class User implements UserDetails{
         this.email = email;
     }
 
-    public List<Cart> getCarts() {
-        return carts;
+    public String getPassword() {
+        return password;
     }
 
-    public void setCarts(List<Cart> carts) {
-        this.carts = carts;
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
+    public Cart getCart() {
+        return cart;
+    }
+
+    public void setCart(Cart cart) {
+        this.cart = cart;
     }
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return List.of();
-    }
-
-    public String getPassword() {
-        return password;
     }
 
     @Override
@@ -75,7 +84,7 @@ public class User implements UserDetails{
 
     @Override
     public boolean isAccountNonExpired() {
-        return false;
+        return true;
     }
 
     @Override
@@ -93,17 +102,12 @@ public class User implements UserDetails{
         return true;
     }
 
-    public void setPassword(String password) {
-        this.password = password;
-    }
-
     @Override
     public String toString() {
         return "User{" +
                 "userId=" + userId +
                 ", name='" + name + '\'' +
                 ", email='" + email + '\'' +
-                ", carts=" + carts +
                 '}';
     }
 }

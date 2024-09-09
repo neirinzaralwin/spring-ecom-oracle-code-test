@@ -10,6 +10,7 @@ import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 @RequestMapping("/products")
 @RestController
@@ -45,11 +46,13 @@ public class ProductController {
         Map<String, Object> response = new HashMap<>();
 
         // Fetch the previous product
-        Product previousProduct = productService.getProductById(product.getProductId());
-        if (previousProduct == null) {
+        Optional<Product> previousProductOptional = productService.getProductById(product.getProductId());
+        if (previousProductOptional.isEmpty()) {
             response.put("error", "Product not found with this id.");
             return ResponseEntity.badRequest().body(response);
         }
+
+        Product previousProduct = previousProductOptional.get();
 
         // Preserve immutable fields
         product.setSku(previousProduct.getSku());
