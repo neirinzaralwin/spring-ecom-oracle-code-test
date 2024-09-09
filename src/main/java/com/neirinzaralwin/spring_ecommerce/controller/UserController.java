@@ -17,7 +17,8 @@ import java.util.Map;
 public class UserController {
 
     @Autowired
-    private UserService service;
+    private UserService userService;
+
 
     @GetMapping("/me")
     public ResponseEntity<User> authenticatedUser() {
@@ -30,7 +31,7 @@ public class UserController {
 
     @GetMapping("/")
     public ResponseEntity<List<User>> findAllUsers() {
-        List<User> users = service.getUsers();
+        List<User> users = userService.getUsers();
         return ResponseEntity.ok(users);
     }
 
@@ -39,13 +40,13 @@ public class UserController {
                                                   @RequestParam(required = false) String name,
                                                   @RequestParam(required = false) String email) {
         if (id != null) {
-            User user = service.getUserById(id);
+            User user = userService.getUserById(id);
             return ResponseEntity.ok(user);
         } else if (name != null) {
-            User user = service.getUserByName(name);
+            User user = userService.getUserByName(name);
             return ResponseEntity.ok(user);
         } else if (email != null) {
-            User user = service.getUserByEmail(email);
+            User user = userService.getUserByEmail(email);
             return ResponseEntity.ok(user);
         } else {
             Map<String, String> errorResponse = new HashMap<>();
@@ -54,33 +55,35 @@ public class UserController {
         }
     }
 
+
+
 //    @GetMapping("/User/{name}")
 //    public User findUserByFirstName(@PathVariable String name) {
-//        return service.getUserByName(name);
+//        return userService.getUserByName(name);
 //    }
 //
 //    @GetMapping("/User/{email}")
 //    public User findUserByEmail(@PathVariable String email) {
-//        return service.getUserByEmail(email);
+//        return userService.getUserByEmail(email);
 //    }
 
 //    @PostMapping("/createUser")
 //    public User addUser(@RequestBody User user) {
-//        return service.saveUser(user);
+//        return userService.saveUser(user);
 //    }
 //
 //    @PostMapping("/addUsers")
 //    public List<User> addUsers(@RequestBody List<User> users) {
-//        return service.saveUsers(users);
+//        return userService.saveUsers(users);
 //    }
 //
 //    @PutMapping("/update")
 //    public User updateUser(@RequestBody User user) {
-//        return service.updateUser(user);
+//        return userService.updateUser(user);
 //    }
 
 //    @DeleteMapping("/delete/{id}")
 //    public String deleteUser(@PathVariable int id) {
-//        return service.deleteUser(id);
+//        return userService.deleteUser(id);
 //    }
 }

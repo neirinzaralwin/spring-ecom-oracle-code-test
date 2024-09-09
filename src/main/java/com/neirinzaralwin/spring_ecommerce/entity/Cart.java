@@ -2,6 +2,8 @@ package com.neirinzaralwin.spring_ecommerce.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
+
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -30,11 +32,16 @@ public class Cart {
     @OneToMany(mappedBy = "cart", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<CartProduct> items;
 
+    @Column(name = "totalPrice", nullable = true)
+    private BigDecimal totalPrice;
+
     @PrePersist
     protected void onCreate() {
         createdAt = LocalDateTime.now();
         userId = user.getUserId();
+        totalPrice = BigDecimal.valueOf(0.0);
     }
+
 
     // Getters and Setters
 
@@ -60,6 +67,18 @@ public class Cart {
 
     public void setUserId(int userId) {
         this.userId = userId;
+    }
+
+    public BigDecimal getTotalPrice() {
+        BigDecimal total = BigDecimal.valueOf(0.0);
+        for (CartProduct item : items) {
+            total = total.add(item.getPrice());
+        }
+        return total;
+    }
+
+    public void setTotalPrice(BigDecimal totalPrice) {
+        this.totalPrice = totalPrice;
     }
 
     public LocalDateTime getCreatedAt() {
@@ -94,6 +113,7 @@ public class Cart {
                 ", createdAt=" + createdAt +
                 ", updatedAt=" + updatedAt +
                 ", items=" + items +
+                ", totalPrice=" + totalPrice +
                 '}';
     }
 }

@@ -3,6 +3,8 @@ package com.neirinzaralwin.spring_ecommerce.entity;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 
+import java.math.BigDecimal;
+
 @Entity
 @Table(name = "CART_PRODUCTS")
 public class CartProduct {
@@ -60,8 +62,9 @@ public class CartProduct {
         this.quantity = quantity;
     }
 
-    public double getPrice() {
-        return price;
+    public BigDecimal getPrice() {
+        BigDecimal calculatedPrice = product.getPrice().multiply(BigDecimal.valueOf(quantity));
+        return calculatedPrice;
     }
 
     public void setPrice(double price) {
