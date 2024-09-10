@@ -30,6 +30,10 @@ public class User implements UserDetails {
     @JsonIgnore
     private Cart cart;
 
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonIgnore
+    private List<Order> orders;
+
     // Getters and Setters
 
     public int getUserId() {
@@ -70,6 +74,14 @@ public class User implements UserDetails {
 
     public void setCart(Cart cart) {
         this.cart = cart;
+    }
+
+    public List<Order> getOrders() {
+        return orders;
+    }
+
+    public void setOrders(List<Order> orders) {
+        this.orders = orders;
     }
 
     @Override
